@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
+---
+
+<BaseLayout>
+	<h1>blogusa</h1>
+	<p>{SITE_DESCRIPTION}</p>
+
+	<ul class="post-list">
+		{
+			posts.map((post) => (
+				<li>
+					<time datetime={post.data.pubDate.toISOString()}>
+						{post.data.pubDate.toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+					<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+					<p>{post.data.description}</p>
+				</li>
+			))
+		}
+	</ul>
+
+	<p><a href="/blog">See all posts &rarr;</a></p>
+</BaseLayout>
